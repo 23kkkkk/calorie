@@ -7,14 +7,14 @@
     <style>
         :root {
             --primary: #4A90E2; --primary-dark: #2C3E50; --success: #2ECC71; --danger: #E74C3C;
-            --bg: #F4F7F6; --card: #FFFFFF; --text: #333333; --text-sub: #888888; --border: #EAEAEA;
+            --water: #00BFFF; --bg: #F4F7F6; --card: #FFFFFF; --text: #333333; --text-sub: #888888; --border: #EAEAEA;
             --shadow: 0 4px 12px rgba(0,0,0,0.05);
         }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif; }
         body { background-color: var(--bg); color: var(--text); padding: 16px; padding-bottom: 90px; }
         
         /* 顶部仪表盘 */
-        .dashboard { background: linear-gradient(135deg, var(--primary), #1A2980); color: white; border-radius: 20px; padding: 22px; box-shadow: 0 8px 20px rgba(74,144,226,0.3); margin-bottom: 20px; }
+        .dashboard { background: linear-gradient(135deg, var(--primary), #1A2980); color: white; border-radius: 20px; padding: 22px; box-shadow: 0 8px 20px rgba(74,144,226,0.3); margin-bottom: 16px; }
         .dash-title { font-size: 13px; opacity: 0.8; margin-bottom: 12px; display: flex; justify-content: space-between; }
         .dash-main { font-size: 46px; font-weight: 700; line-height: 1; margin-bottom: 15px; }
         .dash-main span { font-size: 14px; font-weight: normal; opacity: 0.8; margin-left: 5px; }
@@ -27,6 +27,7 @@
         /* 通用卡片 */
         .card { background: var(--card); border-radius: 16px; padding: 18px; box-shadow: var(--shadow); margin-bottom: 16px; }
         .card-title { font-size: 16px; font-weight: 700; margin-bottom: 14px; display: flex; justify-content: space-between; align-items: center; color: var(--primary-dark); }
+        .card-title .btn-clear { font-size: 12px; color: var(--danger); background: #FFEBEE; padding: 4px 8px; border-radius: 6px; cursor: pointer; border: none; }
         
         /* 搜索区域 */
         .search-box { position: relative; margin-bottom: 10px; }
@@ -43,6 +44,17 @@
         .btn-add { width: 100%; padding: 14px; background: var(--primary); color: white; border: none; border-radius: 10px; font-size: 15px; font-weight: 600; cursor: pointer; margin-top: 10px; }
         .btn-add:active { transform: scale(0.98); background: var(--primary-dark); }
         .btn-add.green { background: var(--success); }
+        .btn-add.orange { background: #F39C12; }
+        .btn-add.water { background: var(--water); }
+
+        /* 喝水卡片专属 */
+        .water-card { display: flex; align-items: center; justify-content: space-between; }
+        .water-info { flex: 1; }
+        .water-info .num { font-size: 20px; font-weight: 700; color: var(--water); }
+        .water-info .num span { font-size: 12px; color: var(--text-sub); font-weight: normal; }
+        .water-info .lbl { font-size: 12px; color: var(--text-sub); margin-top: 4px; var }
+        .btn-water { background:(--water); color: white; border: none; padding: 10px 20px; border-radius: 12px; font-weight: bold; font-size: 14px; cursor: pointer; box-shadow: 0 4px 10px rgba(0,191,255,0.3); }
+        .btn-water:active { transform: scale(0.95); }
 
         /* 食谱Tab */
         .tabs { display: flex; background: #F0F4F8; border-radius: 10px; padding: 4px; margin-bottom: 12px; }
@@ -60,6 +72,12 @@
         .kcal-val.burn { color: var(--success); }
         .btn-del { background: none; border: none; color: #CCC; font-size: 18px; cursor: pointer; padding: 5px; }
 
+        /* 体重专属样式 */
+        .weight-highlight { font-size: 15px; font-weight: 700; color: #F39C12; }
+        .trend-down { color: var(--success); font-size: 12px; margin-left: 5px; }
+        .trend-up { color: var(--danger); font-size: 12px; margin-left: 5px; }
+        .trend-same { color: var(--text-sub); font-size: 12px; margin-left: 5px; }
+
         /* 底部导航 */
         .bottom-bar { position: fixed; bottom: 0; left: 0; right: 0; background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); border-top: 1px solid var(--border); display: flex; padding: 10px 0 calc(10px + env(safe-area-inset-bottom)); z-index: 100; }
         .nav-btn { flex: 1; text-align: center; font-size: 12px; color: var(--text-sub); font-weight: 600; cursor: pointer; }
@@ -67,6 +85,7 @@
         .nav-btn.active { color: var(--primary); }
         
         .empty-msg { text-align: center; color: #AAA; font-size: 13px; padding: 20px 0; }
+        .custom-link { text-align: center; font-size: 12px; color: var(--primary); margin-top: 10px; cursor: pointer; text-decoration: underline; }
     </style>
 </head>
 <body>
@@ -94,6 +113,15 @@
         </div>
     </div>
 
+    <!-- 喝水打卡 -->
+    <div class="card water-card">
+        <div class="water-info">
+            <div class="num"><span id="waterAmount">0</span> <span>/ 2000 ml</span></div>
+            <div class="lbl">💧 今日喝水打卡</div>
+        </div>
+        <button class="btn-water" onclick="addWater()">+ 250ml</button>
+    </div>
+
     <!-- 智能食物记录 -->
     <div class="card">
         <div class="card-title">🍎 智能食物记录 <span style="font-size:12px;color:#888;font-weight:normal;">输入名字自动联想</span></div>
@@ -105,6 +133,7 @@
             <input type="number" id="foodWeight" placeholder="克数/份数">
             <button class="btn-add" onclick="addFood()">+ 吃进肚子</button>
         </div>
+        <div class="custom-link" onclick="addCustomFood()">找不到？手动添加自定义食物</div>
     </div>
 
     <!-- 智能运动消耗 -->
@@ -118,6 +147,16 @@
             <input type="number" id="exTime" placeholder="时长(分钟)">
             <button class="btn-add green" onclick="addExercise()">+ 燃烧卡路里</button>
         </div>
+    </div>
+
+    <!-- 体重记录追踪 -->
+    <div class="card">
+        <div class="card-title">⚖️ 体重记录追踪 <span id="latestWeightDisplay" style="font-size:14px;color:#F39C12;"></span></div>
+        <div class="input-group">
+            <input type="number" id="weightInput" step="0.1" placeholder="今日体重 (kg)">
+            <button class="btn-add orange" style="margin-top:0;" onclick="addWeight()">+ 记录</button>
+        </div>
+        <ul class="list" id="weightList" style="margin-top: 10px;"></ul>
     </div>
 
     <!-- DIY 食谱 -->
@@ -144,7 +183,7 @@
 
     <!-- 今日流水 -->
     <div class="card">
-        <div class="card-title">📋 今日流水记录</div>
+        <div class="card-title">📋 今日流水记录 <button class="btn-clear" onclick="clearToday()">清空今日</button></div>
         <ul class="list" id="todayLog"></ul>
     </div>
 
@@ -155,24 +194,18 @@
     </div>
 
     <script>
-        // ================= 核心数据库 (数据基于中国营养学会及常见食品营养成分表) =================
-        // 食物库 (热量单位: kcal / 100g 或 kcal / 1份)
+        // ================= 核心数据库 =================
         const FOOD_DB = [
-            // 主食
             { n: '米饭', k: 116, u: '100g' }, { n: '面条', k: 138, u: '100g' }, { n: '馒头', k: 223, u: '100g' }, { n: '全麦面包', k: 247, u: '100g' },
             { n: '燕麦片', k: 389, u: '100g' }, { n: '红薯', k: 86, u: '100g' }, { n: '玉米', k: 112, u: '100g' }, { n: '紫薯', k: 82, u: '100g' },
             { n: '肉包子', k: 227, u: '100g' }, { n: '水饺(猪肉)', k: 250, u: '100g' }, { n: '油条', k: 388, u: '100g' },
-            // 蛋白质
             { n: '鸡胸肉', k: 133, u: '100g' }, { n: '鸡蛋', k: 144, u: '1个(约50g)' }, { n: '瘦牛肉', k: 106, u: '100g' }, { n: '瘦猪肉', k: 143, u: '100g' },
             { n: '三文鱼', k: 139, u: '100g' }, { n: '鳕鱼', k: 88, u: '100g' }, { n: '基围虾', k: 93, u: '100g' }, { n: '豆腐', k: 116, u: '100g' },
             { n: '纯牛奶', k: 135, u: '1盒(250ml)' }, { n: '无糖酸奶', k: 72, u: '100g' },
-            // 蔬菜
             { n: '黄瓜', k: 16, u: '100g' }, { n: '番茄', k: 20, u: '100g' }, { n: '菠菜', k: 23, u: '100g' }, { n: '西兰花', k: 35, u: '100g' },
             { n: '生菜', k: 15, u: '100g' }, { n: '冬瓜', k: 12, u: '100g' }, { n: '胡萝卜', k: 41, u: '100g' }, { n: '蘑菇', k: 24, u: '100g' },
-            // 水果
             { n: '苹果', k: 54, u: '100g' }, { n: '香蕉', k: 89, u: '100g' }, { n: '草莓', k: 32, u: '100g' }, { n: '蓝莓', k: 57, u: '100g' },
             { n: '西瓜', k: 30, u: '100g' }, { n: '橙子', k: 48, u: '100g' }, { n: '葡萄', k: 69, u: '100g' }, { n: '牛油果', k: 160, u: '100g' },
-            // 小吃 / 甜品 / 饮品 (按份计算)
             { n: '珍珠奶茶', k: 450, u: '1杯(500ml)' }, { n: '拿铁咖啡', k: 190, u: '1杯(350ml)' }, { n: '美式咖啡', k: 10, u: '1杯(350ml)' },
             { n: '可乐', k: 140, u: '1罐(330ml)' }, { n: '无糖可乐', k: 0, u: '1罐(330ml)' }, { n: '鲜榨橙汁', k: 110, u: '1杯(250ml)' },
             { n: '麦当劳汉堡(巨无霸)', k: 550, u: '1个' }, { n: '肯德基炸鸡腿', k: 280, u: '1个' }, { n: '炸薯条', k: 320, u: '1中份' },
@@ -181,7 +214,6 @@
             { n: '冰淇淋', k: 127, u: '1个球' }, { n: '巧克力', k: 586, u: '100g' }, { n: '薯片', k: 548, u: '100g' }, { n: '辣条', k: 400, u: '100g' }
         ];
 
-        // 运动库 (热量为 METs 估算，按 60kg 体重 / 30分钟 消耗计算)
         const EX_DB = [
             { n: '慢走', k: 90 }, { n: '快走', k: 150 }, { n: '慢跑', k: 250 }, { n: '快跑', k: 350 },
             { n: '骑自行车', k: 200 }, { n: '跳绳', k: 330 }, { n: '游泳', k: 300 }, { n: '瑜伽', k: 120 },
@@ -192,15 +224,22 @@
         // ================= 状态与初始化 =================
         let appData = JSON.parse(localStorage.getItem('smart_health_app')) || {
             target: 1500,
-            records: [], // { id, type: 'food'|'exercise', name, amount, kcal, time }
-            recipes: { breakfast: [], lunch: [], dinner: [] }
+            records: [], 
+            recipes: { breakfast: [], lunch: [], dinner: [] },
+            weights: [],
+            waterLogs: {} // 新增：按日期存喝水量 { "2023-10-27": 1000 }
         };
+
+        // 数据Month兼容处理
+        if (!appData.weights) appData.()weights = [];
+        if (!appData.waterLogs) appData.waterLogs = {};
+
         let currentMeal = 'breakfast';
-        let selectedFood = null; // 暂存点击选中的食物
-        let selectedEx = null; // 暂存点击选中的运动
+        let selectedFood = null; 
+        let selectedEx = null; 
         
         const d = new Date();
-        const todayStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+        const todayStr = `${d.getFullYear()}-${String(d.get + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
         document.getElementById('currentDate').innerText = `${d.getMonth() + 1}月${d.getDate()}日`;
 
         // ================= 搜索联想逻辑 =================
@@ -213,7 +252,6 @@
                 drop.innerHTML = '';
                 if (!val) { drop.style.display = 'none'; return; }
 
-                // 模糊搜索
                 const matches = db.filter(item => item.n.includes(val)).slice(0, 15);
                 if (matches.length === 0) {
                     drop.innerHTML = `<div class="drop-item"><span class="name">未找到，"自定义"记录</span></div>`;
@@ -224,18 +262,16 @@
                 matches.forEach(m => {
                     const div = document.createElement('div');
                     div.className = 'drop-item';
-                    // 显示名称和单位
                     div.innerHTML = `<span class="name">${m.n}</span><span class="kcal">${m.k} kcal/${m.u || '30分钟'}</span>`;
                     div.onclick = function() {
                         input.value = m.n;
                         drop.style.display = 'none';
                         if (isFood) {
                             selectedFood = m;
-                            // 如果单位是100g，默认填100
                             document.getElementById(inputId === 'foodSearch' ? 'foodWeight' : 'recipeWeight').value = m.u.includes('100g') ? 100 : 1;
                         } else {
                             selectedEx = m;
-                            document.getElementById('exTime').value = 30; // 默认30分钟
+                            document.getElementById('exTime').value = 30;
                         }
                     };
                     drop.appendChild(div);
@@ -243,7 +279,6 @@
                 drop.style.display = 'block';
             });
 
-            // 点击别处隐藏
             document.addEventListener('click', function(e) {
                 if (e.target !== input && !drop.contains(e.target)) drop.style.display = 'none';
             });
@@ -254,6 +289,36 @@
         setupSearch('recipeSearch', 'recipeDrop', FOOD_DB, true);
 
         // ================= 数据操作 =================
+        
+        // 喝水打卡
+        function addWater() {
+            let current = appData.waterLogs[todayStr] || 0;
+            appData.waterLogs[todayStr] = current + 250;
+            render();
+        }
+
+        // 自定义食物添加
+        function addCustomFood() {
+            const name = prompt("请输入食物名称 (如: 楼下煎饼果子):");
+            if (!name) return;
+            const kcal = parseFloat(prompt(`请输入 ${name} 的热量 (单位 kcal):`));
+            if (!kcal || kcal <= 0) return;
+            
+            const amount = parseFloat(prompt(`吃了多少份？(默认 1 份)`, "1"));
+            const finalAmount = amount || 1;
+
+            addRecord('food', name, `${finalAmount}份`, Math.round(kcal * finalAmount));
+            alert('记录成功！');
+        }
+
+        // 清空今日流水
+        function clearToday() {
+            if(confirm('确定要清空今天的【所有饮食与运动记录】吗？\n(体重和喝水量不会被清除)')) {
+                appData.records = appData.records.filter(r => r.date !== todayStr);
+                render();
+            }
+        }
+
         function addFood() {
             if (!selectedFood) return alert('请先在搜索框选择食物');
             const amount = parseFloat(document.getElementById('foodWeight').value);
@@ -277,7 +342,6 @@
             const time = parseFloat(document.getElementById('exTime').value);
             if (!time || time <= 0) return alert('请输入正确时长');
 
-            // 基于30分钟的消耗量换算
             const kcal = Math.round((selectedEx.k / 30) * time);
             
             addRecord('exercise', selectedEx.n, `${time}分钟`, kcal);
@@ -302,6 +366,26 @@
 
         function delRecord(id) {
             appData.records = appData.records.filter(r => r.id !== id);
+            render();
+        }
+
+        // ================= 体重模块逻辑 =================
+        function addWeight() {
+            const val = parseFloat(document.getElementById('weightInput').value);
+            if (!val || val <= 0 || val > 300) return alert('请输入正确的体重数值');
+
+            appData.weights.push({
+                id: Date.now(),
+                date: todayStr,
+                weight: val
+            });
+            document.getElementById('weightInput').value = '';
+            render();
+        }
+
+        function delWeight(id) {
+            if(!confirm('删除这条体重记录？')) return;
+            appData.weights = appData.weights.filter(w => w.id !== id);
             render();
         }
 
@@ -353,14 +437,20 @@
             if (input) {
                 try {
                     const parsed = JSON.parse(input);
-                    if (parsed.records) { appData = parsed; render(); alert("恢复成功！"); }
+                    if (parsed.records) { 
+                        appData = parsed; 
+                        if(!appData.weights) appData.weights = []; 
+                        if(!appData.waterLogs) appData.waterLogs = {};
+                        render(); 
+                        alert("恢复成功！"); 
+                    }
                 } catch (e) { alert("恢复失败，格式有误"); }
             }
         }
 
         // ================= 渲染界面 =================
         function render() {
-            // 1. 渲染流水账与计算总计
+            // 1. 渲染饮食/运动流水
             const todayRecs = appData.records.filter(r => r.date === todayStr);
             const logList = document.getElementById('todayLog');
             logList.innerHTML = '';
@@ -393,7 +483,11 @@
                 });
             }
 
-            // 2. 更新顶部看板
+            // 2. 渲染喝水
+            const water = appData.waterLogs[todayStr] || 0;
+            document.getElementById('waterAmount').innerText = water;
+
+            // 3. 更新顶部看板
             const net = intake - burn;
             const remain = appData.target - net;
 
@@ -406,11 +500,58 @@
             remainEl.style.color = remain < 0 ? '#FF6B6B' : '#FFEB3B';
             document.getElementById('targetKcalDisplay').innerText = appData.target;
 
-            // 3. 渲染食谱
+            // 4. 渲染体重记录
+            renderWeights();
+
+            // 5. 渲染食谱
             renderRecipe();
 
             // 保存数据
             localStorage.setItem('smart_health_app', JSON.stringify(appData));
+        }
+
+        function renderWeights() {
+            const list = document.getElementById('weightList');
+            const titleDisplay = document.getElementById('latestWeightDisplay');
+            list.innerHTML = '';
+
+            const weights = appData.weights.slice().sort((a,b) => b.id - a.id);
+
+            if (weights.length === 0) {
+                titleDisplay.innerText = '';
+                list.innerHTML = '<div class="empty-msg">还没有记录体重，快来开启健康第一步！</div>';
+                return;
+            }
+
+            const latest = weights[0];
+            let trendHtml = '';
+            if (weights.length > 1) {
+                const prev = weights[1];
+                const diff = (latest.weight - prev.weight).toFixed(1);
+                if (diff > 0) {
+                    trendHtml = `<span class="trend-up">↑ ${diff}kg</span>`;
+                } else if (diff < 0) {
+                    trendHtml = `<span class="trend-down">↓ ${Math.abs(diff)}kg</span>`;
+                } else {
+                    trendHtml = `<span class="trend-same">- 持平</span>`;
+                }
+            }
+            titleDisplay.innerHTML = `当前: <span class="weight-highlight">${latest.weight}kg</span> ${trendHtml}`;
+
+            weights.slice(0, 5).forEach(w => {
+                const li = document.createElement('li');
+                li.className = 'list-item';
+                li.innerHTML = `
+                    <div class="item-left">
+                        <div class="title">${w.weight} kg</div>
+                        <div class="sub">${w.date}</div>
+                    </div>
+                    <div class="item-right">
+                        <button class="btn-del" onclick="delWeight(${w.id})">✕</button>
+                    </div>
+                `;
+                list.appendChild(li);
+            });
         }
 
         function renderRecipe() {
