@@ -45,15 +45,14 @@
         .btn-add:active { transform: scale(0.98); background: var(--primary-dark); }
         .btn-add.green { background: var(--success); }
         .btn-add.orange { background: #F39C12; }
-        .btn-add.water { background: var(--water); }
 
         /* 喝水卡片专属 */
         .water-card { display: flex; align-items: center; justify-content: space-between; }
         .water-info { flex: 1; }
-        .water-info .num { font-size: 20px; font-weight: 700; color: var(--water); }
-        .water-info .num span { font-size: 12px; color: var(--text-sub); font-weight: normal; }
-        .water-info .lbl { font-size: 12px; color: var(--text-sub); margin-top: 4px; var }
-        .btn-water { background:(--water); color: white; border: none; padding: 10px 20px; border-radius: 12px; font-weight: bold; font-size: 14px; cursor: pointer; box-shadow: 0 4px 10px rgba(0,191,255,0.3); }
+        .water-info .num { font-size: 24px; font-weight: 700; color: var(--water); }
+        .water-info .num span.unit { font-size: 12px; color: var(--text-sub); font-weight: normal; }
+        .water-info .lbl { font-size: 12px; color: var(--text-sub); margin-top: 4px; }
+        .btn-water { background: var(--water); color: white; border: none; padding: 10px 20px; border-radius: 12px; font-weight: bold; font-size: 14px; cursor: pointer; box-shadow: 0 4px 10px rgba(0,191,255,0.3); }
         .btn-water:active { transform: scale(0.95); }
 
         /* 食谱Tab */
@@ -116,7 +115,7 @@
     <!-- 喝水打卡 -->
     <div class="card water-card">
         <div class="water-info">
-            <div class="num"><span id="waterAmount">0</span> <span>/ 2000 ml</span></div>
+            <div class="num"><span id="waterAmount">0</span> <span class="unit">/ 2000 ml</span></div>
             <div class="lbl">💧 今日喝水打卡</div>
         </div>
         <button class="btn-water" onclick="addWater()">+ 250ml</button>
@@ -222,24 +221,25 @@
         ];
 
         // ================= 状态与初始化 =================
-        let appData = JSON.parse(localStorage.getItem('smart_health_app')) || {
-            target: 1500,
-            records: [], 
-            recipes: { breakfast: [], lunch: [], dinner: [] },
-            weights: [],
-            waterLogs: {} // 新增：按日期存喝水量 { "2023-10-27": 1000 }
-        };
-
-        // 数据Month兼容处理
-        if (!appData.weights) appData.()weights = [];
-        if (!appData.waterLogs) appData.waterLogs = {};
+        let appData = { target: 1500, records: [], recipes: { breakfast: [], lunch: [], dinner: [] }, weights: [], waterLogs: {} };
+        try {
+            const saved = localStorage.getItem('smart_health_app');
+            if (saved) {
+                const parsed = JSON.parse(saved);
+                appData = Object.assign(appData, parsed);
+                if (!appData.weights) appData.weights = [];
+                if (!appData.waterLogs) appData.waterLogs = {};
+            }
+        } catch (e) {
+            console.error("数据加载恢复失败", e);
+        }
 
         let currentMeal = 'breakfast';
         let selectedFood = null; 
         let selectedEx = null; 
         
         const d = new Date();
-        const todayStr = `${d.getFullYear()}-${String(d.get + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+        const todayStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
         document.getElementById('currentDate').innerText = `${d.getMonth() + 1}月${d.getDate()}日`;
 
         // ================= 搜索联想逻辑 =================
@@ -248,6 +248,10 @@
             const drop = document.getElementById(dropId);
 
             input.addEventListener('input', function() {
+                // 修复Bug核心：重新输入时，立刻清空选中状态
+                selectedFood = null;
+                selectedEx = null;
+
                 const val = this.value.trim();
                 drop.innerHTML = '';
                 if (!val) { drop.style.display = 'none'; return; }
@@ -290,14 +294,12 @@
 
         // ================= 数据操作 =================
         
-        // 喝水打卡
         function addWater() {
             let current = appData.waterLogs[todayStr] || 0;
             appData.waterLogs[todayStr] = current + 250;
             render();
         }
 
-        // 自定义食物添加
         function addCustomFood() {
             const name = prompt("请输入食物名称 (如: 楼下煎饼果子):");
             if (!name) return;
@@ -311,7 +313,6 @@
             alert('记录成功！');
         }
 
-        // 清空今日流水
         function clearToday() {
             if(confirm('确定要清空今天的【所有饮食与运动记录】吗？\n(体重和喝水量不会被清除)')) {
                 appData.records = appData.records.filter(r => r.date !== todayStr);
@@ -320,7 +321,7 @@
         }
 
         function addFood() {
-            if (!selectedFood) return alert('请先在搜索框选择食物');
+            if (!selectedFood) return alert('请先在搜索框选择下拉菜单里的食物');
             const amount = parseFloat(document.getElementById('foodWeight').value);
             if (!amount || amount <= 0) return alert('请输入正确的克数/份数');
 
@@ -338,7 +339,7 @@
         }
 
         function addExercise() {
-            if (!selectedEx) return alert('请先在搜索框选择运动');
+            if (!selectedEx) return alert('请先在搜索框选择下拉菜单里的运动');
             const time = parseFloat(document.getElementById('exTime').value);
             if (!time || time <= 0) return alert('请输入正确时长');
 
@@ -369,7 +370,6 @@
             render();
         }
 
-        // ================= 体重模块逻辑 =================
         function addWeight() {
             const val = parseFloat(document.getElementById('weightInput').value);
             if (!val || val <= 0 || val > 300) return alert('请输入正确的体重数值');
@@ -389,7 +389,6 @@
             render();
         }
 
-        // ================= 食谱操作 =================
         function switchTab(meal, el) {
             currentMeal = meal;
             document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
@@ -398,7 +397,7 @@
         }
 
         function addToRecipe() {
-            if (!selectedFood) return alert('请先搜索选择食物');
+            if (!selectedFood) return alert('请先搜索并选择食物');
             const amount = parseFloat(document.getElementById('recipeWeight').value);
             if (!amount || amount <= 0) return alert('请输入正确克数/份数');
 
@@ -421,7 +420,6 @@
             render();
         }
 
-        // ================= 目标与备份 =================
         function setTarget() {
             const t = prompt('请输入每日目标热量 (kcal):', appData.target);
             if (t && !isNaN(t) && t > 0) {
@@ -450,7 +448,6 @@
 
         // ================= 渲染界面 =================
         function render() {
-            // 1. 渲染饮食/运动流水
             const todayRecs = appData.records.filter(r => r.date === todayStr);
             const logList = document.getElementById('todayLog');
             logList.innerHTML = '';
@@ -483,11 +480,9 @@
                 });
             }
 
-            // 2. 渲染喝水
             const water = appData.waterLogs[todayStr] || 0;
             document.getElementById('waterAmount').innerText = water;
 
-            // 3. 更新顶部看板
             const net = intake - burn;
             const remain = appData.target - net;
 
@@ -500,13 +495,9 @@
             remainEl.style.color = remain < 0 ? '#FF6B6B' : '#FFEB3B';
             document.getElementById('targetKcalDisplay').innerText = appData.target;
 
-            // 4. 渲染体重记录
             renderWeights();
-
-            // 5. 渲染食谱
             renderRecipe();
 
-            // 保存数据
             localStorage.setItem('smart_health_app', JSON.stringify(appData));
         }
 
