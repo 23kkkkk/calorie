@@ -21,10 +21,10 @@
 
         /* 天气卡片 */
         .weather-card { display: flex; justify-content: space-between; align-items: center; background: linear-gradient(135deg, #00c6ff, #0072ff); color: white; border-radius: 16px; padding: 15px 20px; margin-bottom: 16px; box-shadow: 0 4px 12px rgba(0,114,255,0.3); }
-        .weather-info h3 { font-size: 18px; margin-bottom: 4px; }
+        .weather-info h3 { font-size: 18px; margin-bottom: 4px; display:flex; align-items:center; gap:8px;}
         .weather-info p { font-size: 12px; opacity: 0.9; }
         .weather-temp { font-size: 32px; font-weight: bold; display: flex; align-items: center; gap: 10px; }
-        .city-select { background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.5); color: white; padding: 4px 8px; border-radius: 8px; font-size: 12px; outline: none; -webkit-appearance: none; }
+        .city-select { background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.5); color: white; padding: 4px 8px; border-radius: 8px; font-size: 13px; outline: none; -webkit-appearance: none; }
         .city-select option { color: black; }
 
         /* 顶部仪表盘 */
@@ -47,19 +47,19 @@
         .card-title { font-size: 16px; font-weight: 700; margin-bottom: 14px; display: flex; justify-content: space-between; align-items: center; color: var(--primary-dark); }
         .card-title .btn-clear { font-size: 12px; color: var(--danger); background: #FFEBEE; padding: 4px 8px; border-radius: 6px; cursor: pointer; border: none; }
         
-        /* 搜索区域 & 输入框 */
+        /* 搜索区域 & 输入框 (字号强制16px，防止 iOS 自动放大) */
         .search-box { position: relative; margin-bottom: 10px; }
-        .search-input, .form-input { width: 100%; padding: 14px 16px; border: 2px solid var(--border); border-radius: 12px; font-size: 15px; outline: none; transition: 0.3s; background: #FAFAFA; }
+        .search-input, .form-input { width: 100%; padding: 14px 16px; border: 2px solid var(--border); border-radius: 12px; font-size: 16px; outline: none; transition: 0.3s; background: #FAFAFA; }
         .search-input:focus, .form-input:focus { border-color: var(--primary); background: white; }
         .dropdown { position: absolute; top: 100%; left: 0; right: 0; background: white; border-radius: 0 0 12px 12px; box-shadow: 0 8px 16px rgba(0,0,0,0.1); max-height: 200px; overflow-y: auto; z-index: 10; display: none; }
         .drop-item { padding: 12px 16px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; cursor: pointer; }
         .drop-item:active { background: #F0F0F0; }
-        .drop-item .name { font-weight: 600; font-size: 14px; }
-        .drop-item .kcal { font-size: 13px; color: var(--danger); font-weight: 700; }
+        .drop-item .name { font-weight: 600; font-size: 15px; }
+        .drop-item .kcal { font-size: 14px; color: var(--danger); font-weight: 700; }
         
         .input-group { display: flex; gap: 8px; margin-bottom: 8px; }
-        .input-group input, .input-group select { flex: 1; padding: 12px; border: 1px solid var(--border); border-radius: 10px; font-size: 15px; outline: none; text-align: center; background: #FAFAFA;}
-        .btn-add { width: 100%; padding: 14px; background: var(--primary); color: white; border: none; border-radius: 10px; font-size: 15px; font-weight: 600; cursor: pointer; margin-top: 5px; }
+        .input-group input, .input-group select { flex: 1; padding: 12px; border: 1px solid var(--border); border-radius: 10px; font-size: 16px; outline: none; text-align: center; background: #FAFAFA;}
+        .btn-add { width: 100%; padding: 14px; background: var(--primary); color: white; border: none; border-radius: 10px; font-size: 16px; font-weight: 600; cursor: pointer; margin-top: 5px; }
         .btn-add:active { transform: scale(0.98); background: var(--primary-dark); }
         .btn-add.green { background: var(--success); }
         .btn-add.orange { background: #F39C12; }
@@ -72,12 +72,12 @@
         .water-info .num span.unit { font-size: 12px; color: var(--text-sub); font-weight: normal; }
         .water-info .lbl { font-size: 12px; color: var(--text-sub); margin-top: 4px; }
         .water-controls { display: flex; gap: 8px; }
-        .btn-water { background: var(--water); color: white; border: none; padding: 10px 16px; border-radius: 12px; font-weight: bold; font-size: 14px; cursor: pointer; }
-        .btn-water-minus { background: #E0F7FA; color: var(--water); border: 1px solid var(--water); padding: 10px 16px; border-radius: 12px; font-weight: bold; font-size: 14px; cursor: pointer; }
+        .btn-water { background: var(--water); color: white; border: none; padding: 10px 16px; border-radius: 12px; font-weight: bold; font-size: 15px; cursor: pointer; }
+        .btn-water-minus { background: #E0F7FA; color: var(--water); border: 1px solid var(--water); padding: 10px 16px; border-radius: 12px; font-weight: bold; font-size: 15px; cursor: pointer; }
 
         /* 食谱Tab */
         .tabs { display: flex; background: #F0F4F8; border-radius: 10px; padding: 4px; margin-bottom: 12px; }
-        .tab { flex: 1; text-align: center; padding: 8px; font-size: 13px; font-weight: 600; color: var(--text-sub); border-radius: 8px; cursor: pointer; }
+        .tab { flex: 1; text-align: center; padding: 8px; font-size: 14px; font-weight: 600; color: var(--text-sub); border-radius: 8px; cursor: pointer; }
         .tab.active { background: white; color: var(--primary-dark); box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
 
         /* 列表与记录 */
@@ -85,7 +85,7 @@
         .list-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #F5F5F5; }
         .list-item:last-child { border-bottom: none; }
         .item-left .title { font-size: 15px; font-weight: 600; color: var(--text); }
-        .item-left .sub { font-size: 12px; color: var(--text-sub); margin-top: 2px; }
+        .item-left .sub { font-size: 13px; color: var(--text-sub); margin-top: 2px; }
         .item-right { display: flex; align-items: center; gap: 15px; }
         .kcal-val { font-size: 16px; font-weight: 700; color: var(--danger); }
         .kcal-val.burn { color: var(--success); }
@@ -96,19 +96,19 @@
 
         /* 体重专属样式 */
         .weight-highlight { font-size: 15px; font-weight: 700; color: #F39C12; }
-        .trend-down { color: var(--success); font-size: 12px; margin-left: 5px; }
-        .trend-up { color: var(--danger); font-size: 12px; margin-left: 5px; }
-        .trend-same { color: var(--text-sub); font-size: 12px; margin-left: 5px; }
+        .trend-down { color: var(--success); font-size: 13px; margin-left: 5px; }
+        .trend-up { color: var(--danger); font-size: 13px; margin-left: 5px; }
+        .trend-same { color: var(--text-sub); font-size: 13px; margin-left: 5px; }
 
-        /* 底部导航 (更新为三栏) */
+        /* 底部导航 */
         .bottom-bar { position: fixed; bottom: 0; left: 0; right: 0; background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); border-top: 1px solid var(--border); display: flex; padding: 10px 0 calc(10px + env(safe-area-inset-bottom)); z-index: 100; }
-        .nav-btn { flex: 1; text-align: center; font-size: 12px; color: var(--text-sub); font-weight: 600; cursor: pointer; transition: 0.2s; }
-        .nav-btn span { display: block; font-size: 20px; margin-bottom: 2px; }
+        .nav-btn { flex: 1; text-align: center; font-size: 13px; color: var(--text-sub); font-weight: 600; cursor: pointer; transition: 0.2s; }
+        .nav-btn span { display: block; font-size: 22px; margin-bottom: 2px; }
         .nav-btn.active { color: var(--primary); }
         .nav-btn.active.money-tab { color: var(--money); }
         
-        .empty-msg { text-align: center; color: #AAA; font-size: 13px; padding: 20px 0; }
-        .custom-link { text-align: center; font-size: 12px; color: var(--primary); margin-top: 10px; cursor: pointer; text-decoration: underline; }
+        .empty-msg { text-align: center; color: #AAA; font-size: 14px; padding: 20px 0; }
+        .custom-link { text-align: center; font-size: 13px; color: var(--primary); margin-top: 10px; cursor: pointer; text-decoration: underline; }
     </style>
 </head>
 <body>
@@ -119,9 +119,11 @@
         <!-- 天气卡片 -->
         <div class="weather-card">
             <div class="weather-info">
-                <div style="display:flex; align-items:center; gap:10px; margin-bottom:5px;">
-                    <h3 id="weatherCityDisplay">定位中...</h3>
+                <h3>
+                    <span id="weatherCityDisplay">定位中...</span>
                     <select class="city-select" id="citySelect" onchange="changeCity()">
+                        <option value="auto">📍 自动定位</option>
+                        <option value="35.41,119.52">日照</option>
                         <option value="36.06,120.38">青岛</option>
                         <option value="39.90,116.40">北京</option>
                         <option value="31.23,121.47">上海</option>
@@ -130,18 +132,18 @@
                         <option value="30.57,104.07">成都</option>
                         <option value="30.27,120.15">杭州</option>
                     </select>
-                </div>
+                </h3>
                 <p id="weatherDesc">正在获取天气...</p>
             </div>
             <div class="weather-temp" id="weatherTemp">--°</div>
-        </div>
+        </           div>
 
-        <!-- 顶部热量看板 -->
+        <!-- 顶部 </热量看板 -->
         <div class="dashboard">
-            <div class="dash-title">
+div            <div class="dash-title">
                 <span id="currentDate">今日</span>
                 <span>目标: <strong id="targetKcalDisplay">1500</strong> kcal</span>
-            </div>
+>
             <div class="dash-main" id="netKcal">0 <span>净摄入(kcal)</span></div>
             <div class="dash-detail">
                 <div class="dash-item"><div class="num" id="intakeKcal" style="color: #FF9F43;">0</div><div class="lbl">🍔 饮食</div></div>
@@ -216,13 +218,13 @@
                 <button class="btn-add" style="margin-top:0; background:#8E44AD;" onclick="addToRecipe()">+ 加入当前餐</button>
             </div>
             <ul class="list" id="recipeList" style="margin-top: 15px;"></ul>
-            <div style="text-align: right; font-size: 14px; font-weight: bold; margin-top: 10px; color: #8E44AD;">本餐合计: <span id="recipeTotal">0ul</span> kcal</div>
- class        </div>
+            <div style="text-align: right; font-size: 14px; font-weight: bold; margin-top: 10px; color: #8E44AD;">本餐合计: <span id="recipeTotal">0</span> kcal</div>
+        </div>
 
-        <!-- 今日="流水 -->
-        <div classlist" id="card">
+        <!-- 今日流水 -->
+        <div class="card">
             <div class="card-title">📋 今日打卡流水 <button class="btn-clear" onclick="clearToday()">清空</button></div>
-            <="todayLog"></ul>
+            <ul class="list" id="todayLog"></ul>
         </div>
     </div>
 
@@ -300,13 +302,8 @@
 
         // ================= 状态与初始化 =================
         let appData = { 
-            target: 1500, 
-            records: [], 
-            recipes: { breakfast: [], lunch: [], dinner: [] }, 
-            weights: [], 
-            waterLogs: {},
-            ledger: [], // 新增记账数据
-            cityCoord: '36.06,120.38' // 默认青岛
+            target: 1500, records: [], recipes: { breakfast: [], lunch: [], dinner: [] }, 
+            weights: [], waterLogs: {}, ledger: [], citySetting: 'auto' 
         };
 
         try {
@@ -329,7 +326,7 @@
         document.getElementById('currentDate').innerText = `${d.getMonth() + 1}月${d.getDate()}日`;
         document.getElementById('moneyDateDisplay').innerText = `${d.getMonth() + 1}月${d.getDate()}日`;
 
-        // ================= 页面切换逻辑 =================
+        // ================= 页面切换 =================
         function switchPage(pageId) {
             document.querySelectorAll('.page-container').forEach(p => p.classList.remove('active'));
             document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
@@ -345,7 +342,7 @@
             window.scrollTo(0, 0);
         }
 
-        // ================= 跨天监测逻辑 =================
+        // ================= 跨天监测 =================
         setInterval(() => {
             const now = new Date();
             const currentStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
@@ -361,49 +358,71 @@
         });
 
         // ================= 天气模块 =================
-        document.getElementById('citySelect').value = appData.cityCoord;
+        document.getElementById('citySelect').value = appData.citySetting;
 
-        async function fetchWeather() {
-            const coord = appData.cityCoord.split(',');
-            const lat = coord[0];
-            const lon = coord[1];
-            const cityName = document.getElementById('citySelect').options[document.getElementById('citySelect').selectedIndex].text;
-            
-            document.getElementById('weatherCityDisplay').innerText = cityName;
+        async function fetchWeather(lat, lon, cityNameStr = '当前位置', isAuto = false) {
             document.getElementById('weatherDesc').innerText = "获取中...";
-            
+            document.getElementById('weatherCityDisplay').innerText = cityNameStr;
+
             try {
-                // 调用免费的 Open-Meteo 天气 API
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 5000);
+
                 const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true`;
-                const res = await fetch(url);
+                const res = await fetch(url, { signal: controller.signal });
+                clearTimeout(timeoutId);
                 const data = await res.json();
                 
                 if (data.current_weather) {
                     const temp = Math.round(data.current_weather.temperature);
                     const code = data.current_weather.weathercode;
                     
-                    // 简单的天气代码转换
-                    let desc = "晴";
-                    if(code >= 1 && code <= 3) desc = "多云";
-                    else if(code >= 45 && code <= 48) desc = "雾";
-                    else if(code >= 51 && code <= 67) desc = "雨";
-                    else if(code >= 71 && code <= 77) desc = "雪";
-                    else if(code >= 80 && code <= 82) desc = "阵雨";
-                    else if(code >= 95) desc = "雷雨";
+                    const weatherMap = {
+                        0:'晴', 1:'少云', 2:'多云', 3:'阴天', 45:'雾', 48:'雾凇',
+                        51:'小毛毛雨', 53:'毛毛雨', 55:'大毛毛雨', 56:'冻毛毛雨', 57:'强冻毛毛雨',
+                        61:'小雨', 63:'中雨', 65:'大雨', 66:'冻雨', 67:'强冻雨',
+                        71:'小雪', 73:'中雪', 75:'大雪', 77:'雪粒', 80:'阵雨', 81:'强阵雨', 82:'暴雨',
+                        85:'小阵雪', 86:'大阵雪', 95:'雷阵雨', 96:'雷阵雨带冰雹', 99:'强雷阵雨'
+                    };
+                    const desc = weatherMap[code] || "未知天气";
 
                     document.getElementById('weatherTemp').innerText = `${temp}°`;
                     document.getElementById('weatherDesc').innerText = `${desc} · 实时更新`;
                 }
             } catch (error) {
-                document.getElementById('weatherDesc').innerText = "获取失败，请检查网络";
+                document.getElementById('weatherDesc').innerText = "网络超时，天气获取失败";
+            }
+        }
+
+        function initWeather() {
+            if (appData.citySetting === 'auto') {
+                if ("geolocation" in navigator) {
+                    navigator.geolocation.getCurrentPosition(
+                        (position) => {
+                            fetchWeather(position.coords.latitude, position.coords.longitude, "自动定位", true);
+                        },
+                        (error) => {
+                            document.getElementById('weatherCityDisplay').innerText = "日照 (默认)";
+                            fetchWeather(35.41, 119.52, "日照 (默认)");
+                        },
+                        { timeout: 5000, enableHighAccuracy: true }
+                    );
+                } else {
+                    fetchWeather(35.41, 119.52, "日照 (默认)");
+                }
+            } else {
+                const coord = appData.citySetting.split(',');
+                const selectEl = document.getElementById('citySelect');
+                const cityName = selectEl.options[selectEl.selectedIndex]?.text || '当前城市';
+                fetchWeather(coord[0], coord[1], cityName);
             }
         }
 
         function changeCity() {
             const val = document.getElementById('citySelect').value;
-            appData.cityCoord = val;
+            appData.citySetting = val;
             localStorage.setItem('smart_health_app', JSON.stringify(appData));
-            fetchWeather();
+            initWeather();
         }
 
         // ================= 搜索联想逻辑 =================
@@ -412,6 +431,7 @@
             const drop = document.getElementById(dropId);
 
             input.addEventListener('input', function() {
+                // 彻底清除上次的选中状态，防止输入改变但保留旧选项
                 selectedFood = null;
                 selectedEx = null;
 
@@ -421,7 +441,7 @@
 
                 const matches = db.filter(item => item.n.includes(val)).slice(0, 15);
                 if (matches.length === 0) {
-                    drop.innerHTML = `<div class="drop-item"><span class="name">未找到，请手动添加</span></div>`;
+                    drop.innerHTML = `<div class="drop-item"><span class="name">未找到，请点击下方手动添加</span></div>`;
                     drop.style.display = 'block';
                     return;
                 }
@@ -430,7 +450,7 @@
                     const div = document.createElement('div');
                     div.className = 'drop-item';
                     div.innerHTML = `<span class="name">${m.n}</span><span class="kcal">${m.k} kcal/${m.u || '30分钟'}</span>`;
-                    div.onclick = function() {
+                    div.onclick = function(e) {
                         input.value = m.n;
                         drop.style.display = 'none';
                         if (isFood) {
@@ -466,18 +486,17 @@
             let current = appData.waterLogs[todayStr] || 0;
             if (current >= 250) {
                 appData.waterLogs[todayStr] = current - 250;
-                render();
             } else if (current > 0) {
                 appData.waterLogs[todayStr] = 0;
-                render();
             }
+            render();
         }
 
         function addCustomFood() {
             const name = prompt("请输入食物名称:");
             if (!name) return;
             const kcal = parseFloat(prompt(`请输入 ${name} 的热量 (单位 kcal):`));
-            if (!kcal || kcal <= 0) return;
+            if (!kcal || kcal <= 0) return alert('热量必须是大于0的数字');
             const amount = parseFloat(prompt(`吃了多少份？(默认 1 份)`, "1"));
             const finalAmount = amount || 1;
             addRecord('food', name, `${finalAmount}份`, Math.round(kcal * finalAmount));
@@ -491,22 +510,24 @@
         }
 
         function addFood() {
-            if (!selectedFood) return alert('请先在搜索框选择食物');
+            if (!selectedFood) return alert('请先在下拉菜单中点选食物');
             const amount = parseFloat(document.getElementById('foodWeight').value);
             if (!amount || amount <= 0) return alert('请输入正确克数/份数');
             let kcal = selectedFood.u.includes('100g') ? Math.round((selectedFood.k / 100) * amount) : Math.round(selectedFood.k * amount);
             addRecord('food', selectedFood.n, `${amount}${selectedFood.u.includes('100g')?'g':'份'}`, kcal);
+            
             document.getElementById('foodSearch').value = '';
             document.getElementById('foodWeight').value = '';
             selectedFood = null;
         }
 
         function addExercise() {
-            if (!selectedEx) return alert('请先在搜索框选择运动');
+            if (!selectedEx) return alert('请先在下拉菜单中点选运动');
             const time = parseFloat(document.getElementById('exTime').value);
             if (!time || time <= 0) return alert('请输入正确时长');
             const kcal = Math.round((selectedEx.k / 30) * time);
             addRecord('exercise', selectedEx.n, `${time}分钟`, kcal);
+            
             document.getElementById('exSearch').value = '';
             document.getElementById('exTime').value = '';
             selectedEx = null;
@@ -548,7 +569,7 @@
         }
 
         function addToRecipe() {
-            if (!selectedFood) return alert('请先搜索并选择食物');
+            if (!selectedFood) return alert('请先在下拉菜单中点选食物');
             const amount = parseFloat(document.getElementById('recipeWeight').value);
             if (!amount || amount <= 0) return alert('请输入正确克数/份数');
             let kcal = selectedFood.u.includes('100g') ? Math.round((selectedFood.k / 100) * amount) : Math.round(selectedFood.k * amount);
@@ -556,6 +577,7 @@
             appData.recipes[currentMeal].push({
                 id: Date.now(), name: selectedFood.n, amount: `${amount}${selectedFood.u.includes('100g')?'g':'份'}`, kcal: kcal
             });
+            
             document.getElementById('recipeSearch').value = '';
             document.getElementById('recipeWeight').value = '';
             selectedFood = null;
@@ -577,12 +599,7 @@
             if (!amount || amount <= 0) return alert('请输入正确的金额');
 
             appData.ledger.push({
-                id: Date.now(),
-                date: todayStr,
-                type: type,
-                category: category,
-                amount: amount,
-                note: note
+                id: Date.now(), date: todayStr, type: type, category: category, amount: amount, note: note
             });
 
             document.getElementById('moneyAmount').value = '';
@@ -615,7 +632,7 @@
 
         function backupData() {
             const str = JSON.stringify(appData);
-            prompt("请复制下方文本保存到备忘录：", str);
+            prompt("请复制下方文本保存到备忘录，恢复数据时粘贴：", str);
         }
 
         function restoreData() {
@@ -624,14 +641,16 @@
                 try {
                     const parsed = JSON.parse(input);
                     if (parsed.records) { 
-                        appData = parsed; 
+                        appData = Object.assign(appData, parsed); 
                         if(!appData.weights) appData.weights = []; 
                         if(!appData.waterLogs) appData.waterLogs = {};
                         if(!appData.ledger) appData.ledger = [];
                         render(); 
                         alert("恢复成功！"); 
+                    } else {
+                        alert("数据格式不匹配，恢复失败。");
                     }
-                } catch (e) { alert("恢复失败，格式错误"); }
+                } catch (e) { alert("解析失败，格式有误"); }
             }
         }
 
@@ -773,7 +792,7 @@
         }
 
         // 初始化
-        fetchWeather();
+        initWeather();
         render();
     </script>
 </body>
