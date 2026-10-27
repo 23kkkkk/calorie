@@ -3,16 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>智能热量与健身管家</title>
+    <title>智能生活管家</title>
     <style>
         :root {
             --primary: #4A90E2; --primary-dark: #2C3E50; --success: #2ECC71; --danger: #E74C3C;
-            --water: #00BFFF; --bg: #F4F7F6; --card: #FFFFFF; --text: #333333; --text-sub: #888888; --border: #EAEAEA;
+            --water: #00BFFF; --money: #F39C12; --money-in: #27AE60; --money-out: #E74C3C;
+            --bg: #F4F7F6; --card: #FFFFFF; --text: #333333; --text-sub: #888888; --border: #EAEAEA;
             --shadow: 0 4px 12px rgba(0,0,0,0.05);
         }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif; }
-        body { background-color: var(--bg); color: var(--text); padding: 16px; padding-bottom: 90px; }
+        body { background-color: var(--bg); color: var(--text); padding: 16px; padding-bottom: 80px; }
         
+        /* 页面切换控制 */
+        .page-container { display: none; }
+        .page-container.active { display: block; animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* 天气卡片 */
+        .weather-card { display: flex; justify-content: space-between; align-items: center; background: linear-gradient(135deg, #00c6ff, #0072ff); color: white; border-radius: 16px; padding: 15px 20px; margin-bottom: 16px; box-shadow: 0 4px 12px rgba(0,114,255,0.3); }
+        .weather-info h3 { font-size: 18px; margin-bottom: 4px; }
+        .weather-info p { font-size: 12px; opacity: 0.9; }
+        .weather-temp { font-size: 32px; font-weight: bold; display: flex; align-items: center; gap: 10px; }
+        .city-select { background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.5); color: white; padding: 4px 8px; border-radius: 8px; font-size: 12px; outline: none; -webkit-appearance: none; }
+        .city-select option { color: black; }
+
         /* 顶部仪表盘 */
         .dashboard { background: linear-gradient(135deg, var(--primary), #1A2980); color: white; border-radius: 20px; padding: 22px; box-shadow: 0 8px 20px rgba(74,144,226,0.3); margin-bottom: 16px; }
         .dash-title { font-size: 13px; opacity: 0.8; margin-bottom: 12px; display: flex; justify-content: space-between; }
@@ -24,27 +38,32 @@
         .dash-item .lbl { font-size: 11px; opacity: 0.8; margin-top: 4px; }
         .dash-item:not(:last-child) { border-right: 1px solid rgba(255,255,255,0.2); }
 
+        /* 记账看板 (专属样式) */
+        .money-dash { background: linear-gradient(135deg, #f39c12, #d35400); }
+        .money-dash .dash-detail { background: rgba(0,0,0,0.15); }
+
         /* 通用卡片 */
         .card { background: var(--card); border-radius: 16px; padding: 18px; box-shadow: var(--shadow); margin-bottom: 16px; }
         .card-title { font-size: 16px; font-weight: 700; margin-bottom: 14px; display: flex; justify-content: space-between; align-items: center; color: var(--primary-dark); }
         .card-title .btn-clear { font-size: 12px; color: var(--danger); background: #FFEBEE; padding: 4px 8px; border-radius: 6px; cursor: pointer; border: none; }
         
-        /* 搜索区域 */
+        /* 搜索区域 & 输入框 */
         .search-box { position: relative; margin-bottom: 10px; }
-        .search-input { width: 100%; padding: 14px 16px; border: 2px solid var(--border); border-radius: 12px; font-size: 15px; outline: none; transition: 0.3s; background: #FAFAFA; }
-        .search-input:focus { border-color: var(--primary); background: white; }
+        .search-input, .form-input { width: 100%; padding: 14px 16px; border: 2px solid var(--border); border-radius: 12px; font-size: 15px; outline: none; transition: 0.3s; background: #FAFAFA; }
+        .search-input:focus, .form-input:focus { border-color: var(--primary); background: white; }
         .dropdown { position: absolute; top: 100%; left: 0; right: 0; background: white; border-radius: 0 0 12px 12px; box-shadow: 0 8px 16px rgba(0,0,0,0.1); max-height: 200px; overflow-y: auto; z-index: 10; display: none; }
         .drop-item { padding: 12px 16px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; cursor: pointer; }
         .drop-item:active { background: #F0F0F0; }
         .drop-item .name { font-weight: 600; font-size: 14px; }
         .drop-item .kcal { font-size: 13px; color: var(--danger); font-weight: 700; }
         
-        .input-group { display: flex; gap: 8px; }
-        .input-group input { flex: 1; padding: 12px; border: 1px solid var(--border); border-radius: 10px; font-size: 15px; outline: none; text-align: center; }
-        .btn-add { width: 100%; padding: 14px; background: var(--primary); color: white; border: none; border-radius: 10px; font-size: 15px; font-weight: 600; cursor: pointer; margin-top: 10px; }
+        .input-group { display: flex; gap: 8px; margin-bottom: 8px; }
+        .input-group input, .input-group select { flex: 1; padding: 12px; border: 1px solid var(--border); border-radius: 10px; font-size: 15px; outline: none; text-align: center; background: #FAFAFA;}
+        .btn-add { width: 100%; padding: 14px; background: var(--primary); color: white; border: none; border-radius: 10px; font-size: 15px; font-weight: 600; cursor: pointer; margin-top: 5px; }
         .btn-add:active { transform: scale(0.98); background: var(--primary-dark); }
         .btn-add.green { background: var(--success); }
         .btn-add.orange { background: #F39C12; }
+        .btn-add.money { background: var(--money); }
 
         /* 喝水卡片专属 */
         .water-card { display: flex; align-items: center; justify-content: space-between; }
@@ -52,8 +71,9 @@
         .water-info .num { font-size: 24px; font-weight: 700; color: var(--water); }
         .water-info .num span.unit { font-size: 12px; color: var(--text-sub); font-weight: normal; }
         .water-info .lbl { font-size: 12px; color: var(--text-sub); margin-top: 4px; }
-        .btn-water { background: var(--water); color: white; border: none; padding: 10px 20px; border-radius: 12px; font-weight: bold; font-size: 14px; cursor: pointer; box-shadow: 0 4px 10px rgba(0,191,255,0.3); }
-        .btn-water:active { transform: scale(0.95); }
+        .water-controls { display: flex; gap: 8px; }
+        .btn-water { background: var(--water); color: white; border: none; padding: 10px 16px; border-radius: 12px; font-weight: bold; font-size: 14px; cursor: pointer; }
+        .btn-water-minus { background: #E0F7FA; color: var(--water); border: 1px solid var(--water); padding: 10px 16px; border-radius: 12px; font-weight: bold; font-size: 14px; cursor: pointer; }
 
         /* 食谱Tab */
         .tabs { display: flex; background: #F0F4F8; border-radius: 10px; padding: 4px; margin-bottom: 12px; }
@@ -69,6 +89,9 @@
         .item-right { display: flex; align-items: center; gap: 15px; }
         .kcal-val { font-size: 16px; font-weight: 700; color: var(--danger); }
         .kcal-val.burn { color: var(--success); }
+        .money-val { font-size: 16px; font-weight: 700; }
+        .money-val.in { color: var(--money-in); }
+        .money-val.out { color: var(--money-out); }
         .btn-del { background: none; border: none; color: #CCC; font-size: 18px; cursor: pointer; padding: 5px; }
 
         /* 体重专属样式 */
@@ -77,11 +100,12 @@
         .trend-up { color: var(--danger); font-size: 12px; margin-left: 5px; }
         .trend-same { color: var(--text-sub); font-size: 12px; margin-left: 5px; }
 
-        /* 底部导航 */
+        /* 底部导航 (更新为三栏) */
         .bottom-bar { position: fixed; bottom: 0; left: 0; right: 0; background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); border-top: 1px solid var(--border); display: flex; padding: 10px 0 calc(10px + env(safe-area-inset-bottom)); z-index: 100; }
-        .nav-btn { flex: 1; text-align: center; font-size: 12px; color: var(--text-sub); font-weight: 600; cursor: pointer; }
+        .nav-btn { flex: 1; text-align: center; font-size: 12px; color: var(--text-sub); font-weight: 600; cursor: pointer; transition: 0.2s; }
         .nav-btn span { display: block; font-size: 20px; margin-bottom: 2px; }
         .nav-btn.active { color: var(--primary); }
+        .nav-btn.active.money-tab { color: var(--money); }
         
         .empty-msg { text-align: center; color: #AAA; font-size: 13px; padding: 20px 0; }
         .custom-link { text-align: center; font-size: 12px; color: var(--primary); margin-top: 10px; cursor: pointer; text-decoration: underline; }
@@ -89,139 +113,202 @@
 </head>
 <body>
 
-    <!-- 顶部数据看板 -->
-    <div class="dashboard">
-        <div class="dash-title">
-            <span id="currentDate">今日</span>
-            <span>每日目标: <strong id="targetKcalDisplay">1500</strong> kcal</span>
-        </div>
-        <div class="dash-main" id="netKcal">0 <span>净摄入(kcal)</span></div>
-        <div class="dash-detail">
-            <div class="dash-item">
-                <div class="num" id="intakeKcal" style="color: #FF9F43;">0</div>
-                <div class="lbl">🍔 饮食摄入</div>
+    <!-- ==================== 页面 1：健康管家 ==================== -->
+    <div id="page-health" class="page-container active">
+        
+        <!-- 天气卡片 -->
+        <div class="weather-card">
+            <div class="weather-info">
+                <div style="display:flex; align-items:center; gap:10px; margin-bottom:5px;">
+                    <h3 id="weatherCityDisplay">定位中...</h3>
+                    <select class="city-select" id="citySelect" onchange="changeCity()">
+                        <option value="36.06,120.38">青岛</option>
+                        <option value="39.90,116.40">北京</option>
+                        <option value="31.23,121.47">上海</option>
+                        <option value="23.13,113.26">广州</option>
+                        <option value="22.54,114.06">深圳</option>
+                        <option value="30.57,104.07">成都</option>
+                        <option value="30.27,120.15">杭州</option>
+                    </select>
+                </div>
+                <p id="weatherDesc">正在获取天气...</p>
             </div>
-            <div class="dash-item">
-                <div class="num" id="burnKcal" style="color: #2ECC71;">0</div>
-                <div class="lbl">🏃 运动消耗</div>
+            <div class="weather-temp" id="weatherTemp">--°</div>
+        </div>
+
+        <!-- 顶部热量看板 -->
+        <div class="dashboard">
+            <div class="dash-title">
+                <span id="currentDate">今日</span>
+                <span>目标: <strong id="targetKcalDisplay">1500</strong> kcal</span>
             </div>
-            <div class="dash-item">
-                <div class="num" id="remainKcal">0</div>
-                <div class="lbl">🎯 还可摄入</div>
+            <div class="dash-main" id="netKcal">0 <span>净摄入(kcal)</span></div>
+            <div class="dash-detail">
+                <div class="dash-item"><div class="num" id="intakeKcal" style="color: #FF9F43;">0</div><div class="lbl">🍔 饮食</div></div>
+                <div class="dash-item"><div class="num" id="burnKcal" style="color: #2ECC71;">0</div><div class="lbl">🏃 运动</div></div>
+                <div class="dash-item"><div class="num" id="remainKcal">0</div><div class="lbl">🎯 可摄入</div></div>
             </div>
         </div>
+
+        <!-- 喝水打卡 -->
+        <div class="card water-card">
+            <div class="water-info">
+                <div class="num"><span id="waterAmount">0</span> <span class="unit">/ 2000 ml</span></div>
+                <div class="lbl">💧 今日喝水打卡</div>
+            </div>
+            <div class="water-controls">
+                <button class="btn-water-minus" onclick="removeWater()">- 250ml</button>
+                <button class="btn-water" onclick="addWater()">+ 250ml</button>
+            </div>
+        </div>
+
+        <!-- 智能食物记录 -->
+        <div class="card">
+            <div class="card-title">🍎 智能食物记录</div>
+            <div class="search-box">
+                <input type="text" class="search-input" id="foodSearch" placeholder="搜食物、小吃、甜品..." autocomplete="off">
+                <div class="dropdown" id="foodDrop"></div>
+            </div>
+            <div class="input-group">
+                <input type="number" id="foodWeight" placeholder="克数/份数">
+                <button class="btn-add" style="margin-top:0;" onclick="addFood()">+ 吃进肚子</button>
+            </div>
+            <div class="custom-link" onclick="addCustomFood()">找不到？手动添加食物</div>
+        </div>
+
+        <!-- 智能运动消耗 -->
+        <div class="card">
+            <div class="card-title">🏃 运动消耗记录</div>
+            <div class="search-box">
+                <input type="text" class="search-input" id="exSearch" placeholder="搜运动 (如: 跑步、跳绳)..." autocomplete="off">
+                <div class="dropdown" id="exDrop"></div>
+            </div>
+            <div class="input-group">
+                <input type="number" id="exTime" placeholder="时长(分钟)">
+                <button class="btn-add green" style="margin-top:0;" onclick="addExercise()">+ 燃烧卡路里</button>
+            </div>
+        </div>
+
+        <!-- 体重记录追踪 -->
+        <div class="card">
+            <div class="card-title">⚖️ 体重记录追踪 <span id="latestWeightDisplay" style="font-size:14px;color:#F39C12;"></span></div>
+            <div class="input-group">
+                <input type="number" id="weightInput" step="0.1" placeholder="今日体重 (kg)">
+                <button class="btn-add orange" style="margin-top:0;" onclick="addWeight()">+ 记录</button>
+            </div>
+            <ul class="list" id="weightList" style="margin-top: 10px;"></ul>
+        </div>
+
+        <!-- DIY 食谱 -->
+        <div class="card">
+            <div class="card-title">🍱 健康 DIY 食谱</div>
+            <div class="tabs">
+                <div class="tab active" onclick="switchTab('breakfast', this)">早餐</div>
+                <div class="tab" onclick="switchTab('lunch', this)">午餐</div>
+                <div class="tab" onclick="switchTab('dinner', this)">晚餐</div>
+            </div>
+            <div class="search-box">
+                <input type="text" class="search-input" id="recipeSearch" placeholder="搜索食物加到当前餐" autocomplete="off">
+                <div class="dropdown" id="recipeDrop"></div>
+            </div>
+            <div class="input-group">
+                <input type="number" id="recipeWeight" placeholder="克数/份数">
+                <button class="btn-add" style="margin-top:0; background:#8E44AD;" onclick="addToRecipe()">+ 加入当前餐</button>
+            </div>
+            <ul class="list" id="recipeList" style="margin-top: 15px;"></ul>
+            <div style="text-align: right; font-size: 14px; font-weight: bold; margin-top: 10px; color: #8E44AD;">本餐合计: <span id="recipeTotal">0ul</span> kcal</div>
+ class        </div>
+
+        <!-- 今日="流水 -->
+        <div classlist" id="card">
+            <div class="card-title">📋 今日打卡流水 <button class="btn-clear" onclick="clearToday()">清空</button></div>
+            <="todayLog"></ul>
+        </div>
     </div>
 
-    <!-- 喝水打卡 -->
-    <div class="card water-card">
-        <div class="water-info">
-            <div class="num"><span id="waterAmount">0</span> <span class="unit">/ 2000 ml</span></div>
-            <div class="lbl">💧 今日喝水打卡</div>
+    <!-- ==================== 页面 2：记账本 ==================== -->
+    <div id="page-money" class="page-container">
+        
+        <!-- 记账看板 -->
+        <div class="dashboard money-dash">
+            <div class="dash-title">
+                <span>今日收支结余</span>
+                <span id="moneyDateDisplay">今日</span>
+            </div>
+            <div class="dash-main" id="todayNetMoney">¥0.00</div>
+            <div class="dash-detail">
+                <div class="dash-item"><div class="num" id="todayIncome" style="color: #2ECC71;">¥0</div><div class="lbl">今日收入</div></div>
+                <div class="dash-item"><div class="num" id="todayExpense" style="color: #FF6B6B;">¥0</div><div class="lbl">今日支出</div></div>
+            </div>
         </div>
-        <button class="btn-water" onclick="addWater()">+ 250ml</button>
-    </div>
 
-    <!-- 智能食物记录 -->
-    <div class="card">
-        <div class="card-title">🍎 智能食物记录 <span style="font-size:12px;color:#888;font-weight:normal;">输入名字自动联想</span></div>
-        <div class="search-box">
-            <input type="text" class="search-input" id="foodSearch" placeholder="搜食物、小吃、甜品 (如: 汉堡、奶茶)" autocomplete="off">
-            <div class="dropdown" id="foodDrop"></div>
+        <!-- 快速记账卡片 -->
+        <div class="card">
+            <div class="card-title">💰 记一笔账</div>
+            <div class="input-group">
+                <select id="moneyType" class="form-input">
+                    <option value="expense">支出</option>
+                    <option value="income">收入</option>
+                </select>
+                <select id="moneyCategory" class="form-input">
+                    <option value="餐饮">餐饮</option>
+                    <option value="交通">交通</option>
+                    <option value="购物">购物</option>
+                    <option value="娱乐">娱乐</option>
+                    <option value="居住">居住</option>
+                    <option value="医疗">医疗</option>
+                    <option value="工资">工资</option>
+                    <option value="其他">其他</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <input type="number" id="moneyAmount" placeholder="金额 (¥)" step="0.01">
+                <input type="text" id="moneyNote" placeholder="备注 (可选)">
+            </div>
+            <button class="btn-add money" onclick="addMoneyRecord()">+ 记入账单</button>
         </div>
-        <div class="input-group">
-            <input type="number" id="foodWeight" placeholder="克数/份数">
-            <button class="btn-add" onclick="addFood()">+ 吃进肚子</button>
-        </div>
-        <div class="custom-link" onclick="addCustomFood()">找不到？手动添加自定义食物</div>
-    </div>
 
-    <!-- 智能运动消耗 -->
-    <div class="card">
-        <div class="card-title">🏃 运动消耗记录 <span style="font-size:12px;color:#888;font-weight:normal;">输入运动自动联想</span></div>
-        <div class="search-box">
-            <input type="text" class="search-input" id="exSearch" placeholder="搜运动 (如: 跑步、跳绳、游泳)" autocomplete="off">
-            <div class="dropdown" id="exDrop"></div>
+        <!-- 账单列表 -->
+        <div class="card">
+            <div class="card-title">📒 今日账单明细</div>
+            <ul class="list" id="moneyLog"></ul>
         </div>
-        <div class="input-group">
-            <input type="number" id="exTime" placeholder="时长(分钟)">
-            <button class="btn-add green" onclick="addExercise()">+ 燃烧卡路里</button>
-        </div>
-    </div>
-
-    <!-- 体重记录追踪 -->
-    <div class="card">
-        <div class="card-title">⚖️ 体重记录追踪 <span id="latestWeightDisplay" style="font-size:14px;color:#F39C12;"></span></div>
-        <div class="input-group">
-            <input type="number" id="weightInput" step="0.1" placeholder="今日体重 (kg)">
-            <button class="btn-add orange" style="margin-top:0;" onclick="addWeight()">+ 记录</button>
-        </div>
-        <ul class="list" id="weightList" style="margin-top: 10px;"></ul>
-    </div>
-
-    <!-- DIY 食谱 -->
-    <div class="card">
-        <div class="card-title">🍱 健康 DIY 食谱 <span style="font-size:12px;color:#888;font-weight:normal;">点击搭配计算</span></div>
-        <div class="tabs">
-            <div class="tab active" onclick="switchTab('breakfast', this)">早餐</div>
-            <div class="tab" onclick="switchTab('lunch', this)">午餐</div>
-            <div class="tab" onclick="switchTab('dinner', this)">晚餐</div>
-        </div>
-        <div class="search-box">
-            <input type="text" class="search-input" id="recipeSearch" placeholder="搜索食物加到当前餐" autocomplete="off">
-            <div class="dropdown" id="recipeDrop"></div>
-        </div>
-        <div class="input-group">
-            <input type="number" id="recipeWeight" placeholder="克数/份数">
-            <button class="btn-add" style="margin-top:0; background:#8E44AD;" onclick="addToRecipe()">+ 加入当前餐</button>
-        </div>
-        <ul class="list" id="recipeList" style="margin-top: 15px;"></ul>
-        <div style="text-align: right; font-size: 14px; font-weight: bold; margin-top: 10px; color: #8E44AD;">
-            本餐合计: <span id="recipeTotal">0</span> kcal
-        </div>
-    </div>
-
-    <!-- 今日流水 -->
-    <div class="card">
-        <div class="card-title">📋 今日流水记录 <button class="btn-clear" onclick="clearToday()">清空今日</button></div>
-        <ul class="list" id="todayLog"></ul>
     </div>
 
     <!-- 底部导航 -->
     <div class="bottom-bar">
-        <div class="nav-btn active" onclick="setTarget()"><span>🎯</span>修改目标</div>
-        <div class="nav-btn" onclick="backupData()"><span>💾</span>备份/恢复</div>
+        <div class="nav-btn active" id="nav-health" onclick="switchPage('health')"><span>🏃</span>健康管家</div>
+        <div class="nav-btn" id="nav-money" onclick="switchPage('money')"><span>💰</span>记账本</div>
+        <div class="nav-btn" onclick="openSettings()"><span>⚙️</span>设置备份</div>
     </div>
 
     <script>
         // ================= 核心数据库 =================
         const FOOD_DB = [
             { n: '米饭', k: 116, u: '100g' }, { n: '面条', k: 138, u: '100g' }, { n: '馒头', k: 223, u: '100g' }, { n: '全麦面包', k: 247, u: '100g' },
-            { n: '燕麦片', k: 389, u: '100g' }, { n: '红薯', k: 86, u: '100g' }, { n: '玉米', k: 112, u: '100g' }, { n: '紫薯', k: 82, u: '100g' },
-            { n: '肉包子', k: 227, u: '100g' }, { n: '水饺(猪肉)', k: 250, u: '100g' }, { n: '油条', k: 388, u: '100g' },
-            { n: '鸡胸肉', k: 133, u: '100g' }, { n: '鸡蛋', k: 144, u: '1个(约50g)' }, { n: '瘦牛肉', k: 106, u: '100g' }, { n: '瘦猪肉', k: 143, u: '100g' },
-            { n: '三文鱼', k: 139, u: '100g' }, { n: '鳕鱼', k: 88, u: '100g' }, { n: '基围虾', k: 93, u: '100g' }, { n: '豆腐', k: 116, u: '100g' },
-            { n: '纯牛奶', k: 135, u: '1盒(250ml)' }, { n: '无糖酸奶', k: 72, u: '100g' },
-            { n: '黄瓜', k: 16, u: '100g' }, { n: '番茄', k: 20, u: '100g' }, { n: '菠菜', k: 23, u: '100g' }, { n: '西兰花', k: 35, u: '100g' },
-            { n: '生菜', k: 15, u: '100g' }, { n: '冬瓜', k: 12, u: '100g' }, { n: '胡萝卜', k: 41, u: '100g' }, { n: '蘑菇', k: 24, u: '100g' },
-            { n: '苹果', k: 54, u: '100g' }, { n: '香蕉', k: 89, u: '100g' }, { n: '草莓', k: 32, u: '100g' }, { n: '蓝莓', k: 57, u: '100g' },
-            { n: '西瓜', k: 30, u: '100g' }, { n: '橙子', k: 48, u: '100g' }, { n: '葡萄', k: 69, u: '100g' }, { n: '牛油果', k: 160, u: '100g' },
-            { n: '珍珠奶茶', k: 450, u: '1杯(500ml)' }, { n: '拿铁咖啡', k: 190, u: '1杯(350ml)' }, { n: '美式咖啡', k: 10, u: '1杯(350ml)' },
-            { n: '可乐', k: 140, u: '1罐(330ml)' }, { n: '无糖可乐', k: 0, u: '1罐(330ml)' }, { n: '鲜榨橙汁', k: 110, u: '1杯(250ml)' },
-            { n: '麦当劳汉堡(巨无霸)', k: 550, u: '1个' }, { n: '肯德基炸鸡腿', k: 280, u: '1个' }, { n: '炸薯条', k: 320, u: '1中份' },
-            { n: '披萨', k: 266, u: '1片(约100g)' }, { n: '烤肠', k: 300, u: '1根' }, { n: '关东煮(萝卜)', k: 20, u: '1串' },
-            { n: '提拉米苏', k: 350, u: '1块(100g)' }, { n: '黑森林蛋糕', k: 300, u: '1块(100g)' }, { n: '芝士蛋糕', k: 321, u: '1块(100g)' },
-            { n: '冰淇淋', k: 127, u: '1个球' }, { n: '巧克力', k: 586, u: '100g' }, { n: '薯片', k: 548, u: '100g' }, { n: '辣条', k: 400, u: '100g' }
+            { n: '燕麦片', k: 389, u: '100g' }, { n: '红薯', k: 86, u: '100g' }, { n: '玉米', k: 112, u: '100g' },
+            { n: '鸡胸肉', k: 133, u: '100g' }, { n: '鸡蛋', k: 144, u: '1个(约50g)' }, { n: '纯牛奶', k: 135, u: '1盒(250ml)' },
+            { n: '黄瓜', k: 16, u: '100g' }, { n: '番茄', k: 20, u: '100g' }, { n: '苹果', k: 54, u: '100g' }, { n: '香蕉', k: 89, u: '100g' },
+            { n: '珍珠奶茶', k: 450, u: '1杯(500ml)' }, { n: '麦当劳汉堡', k: 550, u: '1个' }, { n: '炸薯条', k: 320, u: '1中份' },
+            { n: '提拉米苏', k: 350, u: '1块(100g)' }, { n: '薯片', k: 548, u: '100g' }
         ];
 
         const EX_DB = [
-            { n: '慢走', k: 90 }, { n: '快走', k: 150 }, { n: '慢跑', k: 250 }, { n: '快跑', k: 350 },
-            { n: '骑自行车', k: 200 }, { n: '跳绳', k: 330 }, { n: '游泳', k: 300 }, { n: '瑜伽', k: 120 },
-            { n: '力量训练(举铁)', k: 200 }, { n: 'HIIT燃脂', k: 400 }, { n: '打羽毛球', k: 180 }, { n: '爬楼梯', k: 250 },
-            { n: '做家务', k: 80 }, { n: '打篮球', k: 280 }, { n: '踢足球', k: 300 }
+            { n: '慢走', k: 90 }, { n: '快走', k: 150 }, { n: '慢跑', k: 250 }, { n: '骑自行车', k: 200 }, 
+            { n: '跳绳', k: 330 }, { n: '游泳', k: 300 }, { n: '瑜伽', k: 120 }, { n: '力量训练', k: 200 }
         ];
 
         // ================= 状态与初始化 =================
-        let appData = { target: 1500, records: [], recipes: { breakfast: [], lunch: [], dinner: [] }, weights: [], waterLogs: {} };
+        let appData = { 
+            target: 1500, 
+            records: [], 
+            recipes: { breakfast: [], lunch: [], dinner: [] }, 
+            weights: [], 
+            waterLogs: {},
+            ledger: [], // 新增记账数据
+            cityCoord: '36.06,120.38' // 默认青岛
+        };
+
         try {
             const saved = localStorage.getItem('smart_health_app');
             if (saved) {
@@ -229,18 +316,95 @@
                 appData = Object.assign(appData, parsed);
                 if (!appData.weights) appData.weights = [];
                 if (!appData.waterLogs) appData.waterLogs = {};
+                if (!appData.ledger) appData.ledger = [];
             }
-        } catch (e) {
-            console.error("数据加载恢复失败", e);
-        }
+        } catch (e) { console.error("数据加载失败", e); }
 
         let currentMeal = 'breakfast';
         let selectedFood = null; 
         let selectedEx = null; 
         
-        const d = new Date();
-        const todayStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+        let d = new Date();
+        let todayStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
         document.getElementById('currentDate').innerText = `${d.getMonth() + 1}月${d.getDate()}日`;
+        document.getElementById('moneyDateDisplay').innerText = `${d.getMonth() + 1}月${d.getDate()}日`;
+
+        // ================= 页面切换逻辑 =================
+        function switchPage(pageId) {
+            document.querySelectorAll('.page-container').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            
+            if (pageId === 'health') {
+                document.getElementById('page-health').classList.add('active');
+                document.getElementById('nav-health').classList.add('active');
+            } else {
+                document.getElementById('page-money').classList.add('active');
+                document.getElementById('nav-money').classList.add('active');
+                document.getElementById('nav-money').classList.add('money-tab');
+            }
+            window.scrollTo(0, 0);
+        }
+
+        // ================= 跨天监测逻辑 =================
+        setInterval(() => {
+            const now = new Date();
+            const currentStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+            if (currentStr !== todayStr) { window.location.reload(); }
+        }, 60000);
+
+        document.addEventListener('visibilitychange', () => {
+            if (!document.hidden) {
+                const now = new Date();
+                const currentStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+                if (currentStr !== todayStr) { window.location.reload(); }
+            }
+        });
+
+        // ================= 天气模块 =================
+        document.getElementById('citySelect').value = appData.cityCoord;
+
+        async function fetchWeather() {
+            const coord = appData.cityCoord.split(',');
+            const lat = coord[0];
+            const lon = coord[1];
+            const cityName = document.getElementById('citySelect').options[document.getElementById('citySelect').selectedIndex].text;
+            
+            document.getElementById('weatherCityDisplay').innerText = cityName;
+            document.getElementById('weatherDesc').innerText = "获取中...";
+            
+            try {
+                // 调用免费的 Open-Meteo 天气 API
+                const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true`;
+                const res = await fetch(url);
+                const data = await res.json();
+                
+                if (data.current_weather) {
+                    const temp = Math.round(data.current_weather.temperature);
+                    const code = data.current_weather.weathercode;
+                    
+                    // 简单的天气代码转换
+                    let desc = "晴";
+                    if(code >= 1 && code <= 3) desc = "多云";
+                    else if(code >= 45 && code <= 48) desc = "雾";
+                    else if(code >= 51 && code <= 67) desc = "雨";
+                    else if(code >= 71 && code <= 77) desc = "雪";
+                    else if(code >= 80 && code <= 82) desc = "阵雨";
+                    else if(code >= 95) desc = "雷雨";
+
+                    document.getElementById('weatherTemp').innerText = `${temp}°`;
+                    document.getElementById('weatherDesc').innerText = `${desc} · 实时更新`;
+                }
+            } catch (error) {
+                document.getElementById('weatherDesc').innerText = "获取失败，请检查网络";
+            }
+        }
+
+        function changeCity() {
+            const val = document.getElementById('citySelect').value;
+            appData.cityCoord = val;
+            localStorage.setItem('smart_health_app', JSON.stringify(appData));
+            fetchWeather();
+        }
 
         // ================= 搜索联想逻辑 =================
         function setupSearch(inputId, dropId, db, isFood) {
@@ -248,7 +412,6 @@
             const drop = document.getElementById(dropId);
 
             input.addEventListener('input', function() {
-                // 修复Bug核心：重新输入时，立刻清空选中状态
                 selectedFood = null;
                 selectedEx = null;
 
@@ -258,7 +421,7 @@
 
                 const matches = db.filter(item => item.n.includes(val)).slice(0, 15);
                 if (matches.length === 0) {
-                    drop.innerHTML = `<div class="drop-item"><span class="name">未找到，"自定义"记录</span></div>`;
+                    drop.innerHTML = `<div class="drop-item"><span class="name">未找到，请手动添加</span></div>`;
                     drop.style.display = 'block';
                     return;
                 }
@@ -292,46 +455,46 @@
         setupSearch('exSearch', 'exDrop', EX_DB, false);
         setupSearch('recipeSearch', 'recipeDrop', FOOD_DB, true);
 
-        // ================= 数据操作 =================
-        
+        // ================= 健康模块操作 =================
         function addWater() {
             let current = appData.waterLogs[todayStr] || 0;
             appData.waterLogs[todayStr] = current + 250;
             render();
         }
 
+        function removeWater() {
+            let current = appData.waterLogs[todayStr] || 0;
+            if (current >= 250) {
+                appData.waterLogs[todayStr] = current - 250;
+                render();
+            } else if (current > 0) {
+                appData.waterLogs[todayStr] = 0;
+                render();
+            }
+        }
+
         function addCustomFood() {
-            const name = prompt("请输入食物名称 (如: 楼下煎饼果子):");
+            const name = prompt("请输入食物名称:");
             if (!name) return;
             const kcal = parseFloat(prompt(`请输入 ${name} 的热量 (单位 kcal):`));
             if (!kcal || kcal <= 0) return;
-            
             const amount = parseFloat(prompt(`吃了多少份？(默认 1 份)`, "1"));
             const finalAmount = amount || 1;
-
             addRecord('food', name, `${finalAmount}份`, Math.round(kcal * finalAmount));
-            alert('记录成功！');
         }
 
         function clearToday() {
-            if(confirm('确定要清空今天的【所有饮食与运动记录】吗？\n(体重和喝水量不会被清除)')) {
+            if(confirm('确定要清空今天的【饮食与运动】记录吗？')) {
                 appData.records = appData.records.filter(r => r.date !== todayStr);
                 render();
             }
         }
 
         function addFood() {
-            if (!selectedFood) return alert('请先在搜索框选择下拉菜单里的食物');
+            if (!selectedFood) return alert('请先在搜索框选择食物');
             const amount = parseFloat(document.getElementById('foodWeight').value);
-            if (!amount || amount <= 0) return alert('请输入正确的克数/份数');
-
-            let kcal = 0;
-            if (selectedFood.u.includes('100g')) {
-                kcal = Math.round((selectedFood.k / 100) * amount);
-            } else {
-                kcal = Math.round(selectedFood.k * amount);
-            }
-            
+            if (!amount || amount <= 0) return alert('请输入正确克数/份数');
+            let kcal = selectedFood.u.includes('100g') ? Math.round((selectedFood.k / 100) * amount) : Math.round(selectedFood.k * amount);
             addRecord('food', selectedFood.n, `${amount}${selectedFood.u.includes('100g')?'g':'份'}`, kcal);
             document.getElementById('foodSearch').value = '';
             document.getElementById('foodWeight').value = '';
@@ -339,12 +502,10 @@
         }
 
         function addExercise() {
-            if (!selectedEx) return alert('请先在搜索框选择下拉菜单里的运动');
+            if (!selectedEx) return alert('请先在搜索框选择运动');
             const time = parseFloat(document.getElementById('exTime').value);
             if (!time || time <= 0) return alert('请输入正确时长');
-
             const kcal = Math.round((selectedEx.k / 30) * time);
-            
             addRecord('exercise', selectedEx.n, `${time}分钟`, kcal);
             document.getElementById('exSearch').value = '';
             document.getElementById('exTime').value = '';
@@ -354,12 +515,7 @@
         function addRecord(type, name, amount, kcal) {
             const n = new Date();
             appData.records.push({
-                id: Date.now(),
-                date: todayStr,
-                type: type,
-                name: name,
-                amount: amount,
-                kcal: kcal,
+                id: Date.now(), date: todayStr, type: type, name: name, amount: amount, kcal: kcal,
                 time: `${String(n.getHours()).padStart(2, '0')}:${String(n.getMinutes()).padStart(2, '0')}`
             });
             render();
@@ -373,12 +529,7 @@
         function addWeight() {
             const val = parseFloat(document.getElementById('weightInput').value);
             if (!val || val <= 0 || val > 300) return alert('请输入正确的体重数值');
-
-            appData.weights.push({
-                id: Date.now(),
-                date: todayStr,
-                weight: val
-            });
+            appData.weights.push({ id: Date.now(), date: todayStr, weight: val });
             document.getElementById('weightInput').value = '';
             render();
         }
@@ -400,14 +551,10 @@
             if (!selectedFood) return alert('请先搜索并选择食物');
             const amount = parseFloat(document.getElementById('recipeWeight').value);
             if (!amount || amount <= 0) return alert('请输入正确克数/份数');
-
             let kcal = selectedFood.u.includes('100g') ? Math.round((selectedFood.k / 100) * amount) : Math.round(selectedFood.k * amount);
             
             appData.recipes[currentMeal].push({
-                id: Date.now(),
-                name: selectedFood.n,
-                amount: `${amount}${selectedFood.u.includes('100g')?'g':'份'}`,
-                kcal: kcal
+                id: Date.now(), name: selectedFood.n, amount: `${amount}${selectedFood.u.includes('100g')?'g':'份'}`, kcal: kcal
             });
             document.getElementById('recipeSearch').value = '';
             document.getElementById('recipeWeight').value = '';
@@ -420,18 +567,59 @@
             render();
         }
 
+        // ================= 记账模块操作 =================
+        function addMoneyRecord() {
+            const type = document.getElementById('moneyType').value;
+            const category = document.getElementById('moneyCategory').value;
+            const amount = parseFloat(document.getElementById('moneyAmount').value);
+            const note = document.getElementById('moneyNote').value.trim();
+
+            if (!amount || amount <= 0) return alert('请输入正确的金额');
+
+            appData.ledger.push({
+                id: Date.now(),
+                date: todayStr,
+                type: type,
+                category: category,
+                amount: amount,
+                note: note
+            });
+
+            document.getElementById('moneyAmount').value = '';
+            document.getElementById('moneyNote').value = '';
+            render();
+        }
+
+        function delMoneyRecord(id) {
+            if(!confirm('删除这笔账单？')) return;
+            appData.ledger = appData.ledger.filter(m => m.id !== id);
+            render();
+        }
+
+        // ================= 设置与备份 =================
+        function openSettings() {
+            const action = prompt("请输入数字选择操作：\n1. 修改每日热量目标\n2. 备份全部数据\n3. 恢复全部数据");
+            if (action === '1') setTarget();
+            else if (action === '2') backupData();
+            else if (action === '3') restoreData();
+        }
+
         function setTarget() {
             const t = prompt('请输入每日目标热量 (kcal):', appData.target);
             if (t && !isNaN(t) && t > 0) {
                 appData.target = parseInt(t);
                 render();
+                alert('修改成功');
             }
         }
 
         function backupData() {
             const str = JSON.stringify(appData);
-            prompt("请复制下方数据备份（存到备忘录）。下次粘贴恢复：", str);
-            const input = prompt("如果要恢复数据，请粘贴备份代码：");
+            prompt("请复制下方文本保存到备忘录：", str);
+        }
+
+        function restoreData() {
+            const input = prompt("请粘贴备份数据：");
             if (input) {
                 try {
                     const parsed = JSON.parse(input);
@@ -439,29 +627,28 @@
                         appData = parsed; 
                         if(!appData.weights) appData.weights = []; 
                         if(!appData.waterLogs) appData.waterLogs = {};
+                        if(!appData.ledger) appData.ledger = [];
                         render(); 
                         alert("恢复成功！"); 
                     }
-                } catch (e) { alert("恢复失败，格式有误"); }
+                } catch (e) { alert("恢复失败，格式错误"); }
             }
         }
 
         // ================= 渲染界面 =================
         function render() {
+            // 1. 渲染健康流水
             const todayRecs = appData.records.filter(r => r.date === todayStr);
             const logList = document.getElementById('todayLog');
             logList.innerHTML = '';
-            
-            let intake = 0;
-            let burn = 0;
+            let intake = 0, burn = 0;
 
             if (todayRecs.length === 0) {
-                logList.innerHTML = '<div class="empty-msg">今天还没有记录哦，快去吃喝玩乐吧！</div>';
+                logList.innerHTML = '<div class="empty-msg">今天还没有健康打卡记录</div>';
             } else {
                 todayRecs.slice().reverse().forEach(r => {
                     if (r.type === 'food') intake += r.kcal;
                     if (r.type === 'exercise') burn += r.kcal;
-
                     const li = document.createElement('li');
                     li.className = 'list-item';
                     li.innerHTML = `
@@ -470,33 +657,28 @@
                             <div class="sub">${r.amount} · ${r.time}</div>
                         </div>
                         <div class="item-right">
-                            <span class="kcal-val ${r.type === 'exercise' ? 'burn' : ''}">
-                                ${r.type === 'exercise' ? '-' : '+'}${r.kcal}
-                            </span>
+                            <span class="kcal-val ${r.type === 'exercise' ? 'burn' : ''}">${r.type === 'exercise' ? '-' : '+'}${r.kcal}</span>
                             <button class="btn-del" onclick="delRecord(${r.id})">✕</button>
-                        </div>
-                    `;
+                        </div>`;
                     logList.appendChild(li);
                 });
             }
 
-            const water = appData.waterLogs[todayStr] || 0;
-            document.getElementById('waterAmount').innerText = water;
-
+            // 2. 更新热量看板
+            document.getElementById('waterAmount').innerText = appData.waterLogs[todayStr] || 0;
             const net = intake - burn;
-            const remain = appData.target - net;
-
             document.getElementById('netKcal').innerHTML = `${net} <span>净摄入(kcal)</span>`;
             document.getElementById('intakeKcal').innerText = intake;
             document.getElementById('burnKcal').innerText = burn;
-            
-            const remainEl = document.getElementById('remainKcal');
-            remainEl.innerText = remain;
-            remainEl.style.color = remain < 0 ? '#FF6B6B' : '#FFEB3B';
+            document.getElementById('remainKcal').innerText = appData.target - net;
             document.getElementById('targetKcalDisplay').innerText = appData.target;
 
+            // 3. 渲染体重
             renderWeights();
+            // 4. 渲染食谱
             renderRecipe();
+            // 5. 渲染记账
+            renderMoney();
 
             localStorage.setItem('smart_health_app', JSON.stringify(appData));
         }
@@ -505,27 +687,21 @@
             const list = document.getElementById('weightList');
             const titleDisplay = document.getElementById('latestWeightDisplay');
             list.innerHTML = '';
-
             const weights = appData.weights.slice().sort((a,b) => b.id - a.id);
 
             if (weights.length === 0) {
                 titleDisplay.innerText = '';
-                list.innerHTML = '<div class="empty-msg">还没有记录体重，快来开启健康第一步！</div>';
+                list.innerHTML = '<div class="empty-msg">暂无记录</div>';
                 return;
             }
 
             const latest = weights[0];
             let trendHtml = '';
             if (weights.length > 1) {
-                const prev = weights[1];
-                const diff = (latest.weight - prev.weight).toFixed(1);
-                if (diff > 0) {
-                    trendHtml = `<span class="trend-up">↑ ${diff}kg</span>`;
-                } else if (diff < 0) {
-                    trendHtml = `<span class="trend-down">↓ ${Math.abs(diff)}kg</span>`;
-                } else {
-                    trendHtml = `<span class="trend-same">- 持平</span>`;
-                }
+                const diff = (latest.weight - weights[1].weight).toFixed(1);
+                if (diff > 0) trendHtml = `<span class="trend-up">↑ ${diff}kg</span>`;
+                else if (diff < 0) trendHtml = `<span class="trend-down">↓ ${Math.abs(diff)}kg</span>`;
+                else trendHtml = `<span class="trend-same">- 持平</span>`;
             }
             titleDisplay.innerHTML = `当前: <span class="weight-highlight">${latest.weight}kg</span> ${trendHtml}`;
 
@@ -533,14 +709,8 @@
                 const li = document.createElement('li');
                 li.className = 'list-item';
                 li.innerHTML = `
-                    <div class="item-left">
-                        <div class="title">${w.weight} kg</div>
-                        <div class="sub">${w.date}</div>
-                    </div>
-                    <div class="item-right">
-                        <button class="btn-del" onclick="delWeight(${w.id})">✕</button>
-                    </div>
-                `;
+                    <div class="item-left"><div class="title">${w.weight} kg</div><div class="sub">${w.date}</div></div>
+                    <div class="item-right"><button class="btn-del" onclick="delWeight(${w.id})">✕</button></div>`;
                 list.appendChild(li);
             });
         }
@@ -552,28 +722,58 @@
             const items = appData.recipes[currentMeal];
             
             if (items.length === 0) {
-                list.innerHTML = '<div class="empty-msg">本餐暂无安排，去上面搜索添加吧</div>';
+                list.innerHTML = '<div class="empty-msg">暂无搭配</div>';
             } else {
                 items.forEach(item => {
                     total += item.kcal;
                     const li = document.createElement('li');
                     li.className = 'list-item';
                     li.innerHTML = `
-                        <div class="item-left">
-                            <div class="title">${item.name}</div>
-                            <div class="sub">${item.amount}</div>
-                        </div>
-                        <div class="item-right">
-                            <span class="kcal-val">${item.kcal}</span>
-                            <button class="btn-del" onclick="delRecipe(${item.id})">✕</button>
-                        </div>
-                    `;
+                        <div class="item-left"><div class="title">${item.name}</div><div class="sub">${item.amount}</div></div>
+                        <div class="item-right"><span class="kcal-val">${item.kcal}</span><button class="btn-del" onclick="delRecipe(${item.id})">✕</button></div>`;
                     list.appendChild(li);
                 });
             }
             document.getElementById('recipeTotal').innerText = total;
         }
 
+        function renderMoney() {
+            const todayMoney = appData.ledger.filter(m => m.date === todayStr);
+            const logList = document.getElementById('moneyLog');
+            logList.innerHTML = '';
+            
+            let income = 0, expense = 0;
+
+            if (todayMoney.length === 0) {
+                logList.innerHTML = '<div class="empty-msg">今天还没有账单，钱花哪了？</div>';
+            } else {
+                todayMoney.slice().reverse().forEach(m => {
+                    if (m.type === 'income') income += m.amount;
+                    else expense += m.amount;
+
+                    const li = document.createElement('li');
+                    li.className = 'list-item';
+                    li.innerHTML = `
+                        <div class="item-left">
+                            <div class="title">${m.type === 'income' ? '🟢' : '🔴'} ${m.category}</div>
+                            <div class="sub">${m.note || '无备注'}</div>
+                        </div>
+                        <div class="item-right">
+                            <span class="money-val ${m.type}">${m.type === 'income' ? '+' : '-'}¥${m.amount.toFixed(2)}</span>
+                            <button class="btn-del" onclick="delMoneyRecord(${m.id})">✕</button>
+                        </div>`;
+                    logList.appendChild(li);
+                });
+            }
+
+            const netMoney = income - expense;
+            document.getElementById('todayNetMoney').innerText = `¥${netMoney.toFixed(2)}`;
+            document.getElementById('todayIncome').innerText = `¥${income.toFixed(2)}`;
+            document.getElementById('todayExpense').innerText = `¥${expense.toFixed(2)}`;
+        }
+
+        // 初始化
+        fetchWeather();
         render();
     </script>
 </body>
